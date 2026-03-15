@@ -126,6 +126,15 @@
       letter-spacing: 0.08em;
     }
 
+    /* concentration label should NOT be uppercased */
+    .conc-value {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: none;
+    }
+
     .rate-value {
       display: flex;
       align-items: baseline;
@@ -434,7 +443,7 @@
       <div class="rate-card">
         <div class="rate-top">
           <div class="label">Infusion rate</div>
-          <div class="label" id="concLabel">8 µg/ml</div>
+          <div class="conc-value" id="concLabel">8 µg/ml</div>
         </div>
         <div class="rate-value">
           <div class="rate-number" id="rateOutput">6.13</div>
@@ -445,11 +454,11 @@
       <div class="hero-body">
         <div>
           <div class="select-row">
-            <label class="field-label" for="concentration">Stężenie roztworu</label>
-            <select class="select" id="concentration">
-              <option value="8">400 µg / 50 ml (8 µg/ml)</option>
-              <option value="4">200 µg / 50 ml (4 µg/ml)</option>
-            </select>
+            <label class="field-label">Stężenie roztworu</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <button id="conc8" style="padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:white;font-weight:700;">400 µg / 50 ml (8 µg/ml)</button>
+              <button id="conc4" style="padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.05);color:white;font-weight:700;">200 µg / 50 ml (4 µg/ml)</button>
+            </div>
           </div>
 
           <div class="dial-card" style="margin-top:18px;">
@@ -528,7 +537,24 @@
 
     const weightRange = document.getElementById('weightRange');
     const doseRange = document.getElementById('doseRange');
-    const concentration = document.getElementById('concentration');
+    let concentration = 8;
+
+    const conc8Btn = document.getElementById('conc8');
+    const conc4Btn = document.getElementById('conc4');
+
+    conc8Btn.addEventListener('click', () => {
+      concentration = 8;
+      conc8Btn.style.background = 'rgba(255,255,255,0.15)';
+      conc4Btn.style.background = 'rgba(255,255,255,0.05)';
+      update();
+    });
+
+    conc4Btn.addEventListener('click', () => {
+      concentration = 4;
+      conc4Btn.style.background = 'rgba(255,255,255,0.15)';
+      conc8Btn.style.background = 'rgba(255,255,255,0.05)';
+      update();
+    });
 
     const quickDoseWrap = document.getElementById('quickDose');
     const doseSteps = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4];
@@ -567,12 +593,12 @@
 
     weightRange.addEventListener('input', update);
     doseRange.addEventListener('input', update);
-    concentration.addEventListener('change', update);
+    
 
     function update() {
       const weight = Number(weightRange.value);
       const dose = Number(doseRange.value);
-      const conc = Number(concentration.value);
+      const conc = concentration;
 
       const totalUgPerHour = weight * dose;
       const rate = totalUgPerHour / conc;
