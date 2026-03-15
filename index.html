@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Kalkulator Dexdor</title>
+  <style>
+    :root {
+      --bg1: #083b8f;
+      --bg2: #14a8ea;
+      --panel: rgba(255,255,255,0.92);
+      --panel-soft: rgba(255,255,255,0.18);
+      --text: #0f2857;
+      --text-soft: #5f7194;
+      --line: rgba(255,255,255,0.28);
+      --accent: #1d8fff;
+      --accent-dark: #0c63d4;
+      --shadow: 0 18px 50px rgba(6, 26, 68, 0.28);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 30%),
+        linear-gradient(180deg, #0d3e97 0%, #1093e0 48%, #8ee1ff 100%);
+      color: white;
+    }
+
+    body {
+      padding: max(16px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)) 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .hero {
+      background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 32px;
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-top {
+      padding: 22px 22px 18px;
+      background: linear-gradient(180deg, rgba(18, 40, 112, 0.9), rgba(22, 115, 216, 0.72));
+      border-bottom: 1px solid rgba(255,255,255,0.16);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .brand-badge .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #f05fd6, #7647ff);
+      box-shadow: 0 0 14px rgba(236, 96, 212, 0.7);
+    }
+
+    .hero-top h1 {
+      margin: 14px 0 6px;
+      font-size: 1.95rem;
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-top p {
+      margin: 0;
+      color: rgba(255,255,255,0.84);
+      font-size: 0.98rem;
+    }
+
+    .rate-card {
+      margin: 18px 22px 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(236,246,255,0.92));
+      border-radius: 28px;
+      padding: 18px 20px 20px;
+      color: var(--text);
+      box-shadow: 0 12px 28px rgba(12, 60, 124, 0.2);
+    }
+
+    .rate-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .rate-top .label {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .rate-value {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .rate-number {
+      font-size: clamp(3rem, 12vw, 4.7rem);
+      line-height: 0.95;
+      font-weight: 800;
+      color: #1890ff;
+      letter-spacing: -0.05em;
+    }
+
+    .rate-unit {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #3a475c;
+      color: white;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .hero-body {
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .select-row {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .select {
+      width: 100%;
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.28);
+      color: white;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.08));
+      border-radius: 18px;
+      padding: 15px 48px 15px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+      outline: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, white 50%),
+        linear-gradient(135deg, white 50%, transparent 50%);
+      background-position:
+        calc(100% - 22px) calc(50% - 3px),
+        calc(100% - 16px) calc(50% - 3px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .dial-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .dial-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 28px;
+      padding: 20px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .dial-title {
+      text-align: center;
+      font-weight: 700;
+      color: white;
+      font-size: 1.08rem;
+    }
+
+    .dial-subtitle {
+      color: rgba(255,255,255,0.72);
+      font-size: 0.92rem;
+      margin-top: -4px;
+    }
+
+    .dial {
+      width: min(76vw, 260px);
+      height: min(76vw, 260px);
+      max-width: 260px;
+      max-height: 260px;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.88);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 62%, rgba(255,255,255,0.01) 100%);
+    }
+
+    .dial::before, .dial::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 0 0 5px rgba(255,255,255,0.1);
+    }
+
+    .dial::before { top: -8px; }
+    .dial::after { bottom: -8px; opacity: 0; }
+
+    .dial-controls {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 56px 1fr 56px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-btn {
+      width: 56px;
+      height: 56px;
+      border: 0;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(215,231,255,0.92));
+      color: var(--accent-dark);
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 500;
+      box-shadow: 0 10px 22px rgba(12, 43, 92, 0.22);
+      cursor: pointer;
+    }
+
+    .step-btn:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .dial-center {
+      text-align: center;
+      min-width: 0;
+    }
+
+    .dial-value {
+      font-size: clamp(2.5rem, 10vw, 3.8rem);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      color: white;
+    }
+
+    .dial-unit {
+      margin-top: 8px;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.84);
+      font-weight: 600;
+    }
+
+    .slider-wrap {
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.26);
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 0;
+      background: white;
+      box-shadow: 0 4px 12px rgba(8, 35, 91, 0.35);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 0;
+      background: white;
+      box-shadow: 0 4px 12px rgba(8, 35, 91, 0.35);
+      cursor: pointer;
+    }
+
+    .quick-dose {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      border: 1px solid rgba(255,255,255,0.24);
+      background: rgba(255,255,255,0.12);
+      color: white;
+      border-radius: 999px;
+      padding: 9px 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      background: white;
+      color: var(--accent-dark);
+      border-color: white;
+    }
+
+    .details {
+      margin-top: 6px;
+      background: rgba(255,255,255,0.9);
+      color: var(--text);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 12px 28px rgba(12, 60, 124, 0.18);
+    }
+
+    .details-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-box {
+      border-radius: 16px;
+      background: #eef6ff;
+      padding: 14px;
+    }
+
+    .detail-box .k {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #5f7194;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .detail-box .v {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #18396e;
+    }
+
+    .footnote {
+      margin-top: 14px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: #4d648d;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 16px;
+      color: rgba(255,255,255,0.86);
+      font-size: 0.86rem;
+      padding-bottom: 8px;
+    }
+
+    @media (min-width: 860px) {
+      .app { max-width: 920px; }
+      .hero-body { grid-template-columns: 1fr 1fr; }
+      .details-grid { grid-template-columns: repeat(3, 1fr); }
+      .dial { width: 240px; height: 240px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <div class="brand-badge">
+            <span class="dot"></span>
+            Dexdor / Dexmedetomidyna
+          </div>
+          <div style="font-weight:700; opacity:0.9;">MICHAA</div>
+        </div>
+        <h1>Kalkulator infuzji</h1>
+        <p>Sedacja ciągła bez bolusa. Wynik podany jako przepływ pompy w ml/h.</p>
+      </div>
+
+      <div class="rate-card">
+        <div class="rate-top">
+          <div class="label">Infusion rate</div>
+          <div class="label" id="concLabel">8 µg/ml</div>
+        </div>
+        <div class="rate-value">
+          <div class="rate-number" id="rateOutput">6.13</div>
+          <div class="rate-unit">ml/h</div>
+        </div>
+      </div>
+
+      <div class="hero-body">
+        <div>
+          <div class="select-row">
+            <label class="field-label" for="concentration">Stężenie roztworu</label>
+            <select class="select" id="concentration">
+              <option value="8">400 µg / 50 ml (8 µg/ml)</option>
+              <option value="4">200 µg / 50 ml (4 µg/ml)</option>
+            </select>
+          </div>
+
+          <div class="dial-card" style="margin-top:18px;">
+            <div class="dial-title">Masa pacjenta</div>
+            <div class="dial-subtitle">Patient weight</div>
+            <div class="dial">
+              <div class="dial-controls">
+                <button class="step-btn" id="weightMinus" type="button">−</button>
+                <div class="dial-center">
+                  <div class="dial-value" id="weightValue">70</div>
+                  <div class="dial-unit">kg</div>
+                </div>
+                <button class="step-btn" id="weightPlus" type="button">+</button>
+              </div>
+            </div>
+            <div class="slider-wrap">
+              <input id="weightRange" type="range" min="20" max="200" step="1" value="70" />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="dial-card">
+            <div class="dial-title">Dawka</div>
+            <div class="dial-subtitle">mcg/kg/hr</div>
+            <div class="dial">
+              <div class="dial-controls">
+                <button class="step-btn" id="doseMinus" type="button">−</button>
+                <div class="dial-center">
+                  <div class="dial-value" id="doseValue">0.7</div>
+                  <div class="dial-unit">µg/kg/h</div>
+                </div>
+                <button class="step-btn" id="dosePlus" type="button">+</button>
+              </div>
+            </div>
+            <div class="slider-wrap">
+              <input id="doseRange" type="range" min="0.2" max="1.4" step="0.1" value="0.7" />
+            </div>
+            <div class="quick-dose" id="quickDose"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 0 22px 22px;">
+        <section class="details">
+          <div class="details-grid">
+            <div class="detail-box">
+              <span class="k">Wzór</span>
+              <span class="v">ml/h = (µg/kg/h × kg) / (µg/ml)</span>
+            </div>
+            <div class="detail-box">
+              <span class="k">Zapotrzebowanie</span>
+              <span class="v" id="ugPerHour">49.0 µg/h</span>
+            </div>
+            <div class="detail-box">
+              <span class="k">Zakres</span>
+              <span class="v">0,2–1,4 µg/kg/h</span>
+            </div>
+          </div>
+          <div class="footnote">
+            Uwaga! Kalkulator wyłącznie do celów naukowych, nie może być używany w praktyce klinicznej. 
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <div class="footer">Dexmedetomidyna / Dexdor — kalkulator przepływu pompy</div>
+  </main>
+
+  <script>
+    const weightValue = document.getElementById('weightValue');
+    const doseValue = document.getElementById('doseValue');
+    const rateOutput = document.getElementById('rateOutput');
+    const ugPerHour = document.getElementById('ugPerHour');
+    const concLabel = document.getElementById('concLabel');
+
+    const weightRange = document.getElementById('weightRange');
+    const doseRange = document.getElementById('doseRange');
+    const concentration = document.getElementById('concentration');
+
+    const quickDoseWrap = document.getElementById('quickDose');
+    const doseSteps = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4];
+
+    doseSteps.forEach((step) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chip';
+      btn.textContent = step.toFixed(1);
+      btn.addEventListener('click', () => {
+        doseRange.value = step.toFixed(1);
+        update();
+      });
+      quickDoseWrap.appendChild(btn);
+    });
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function setWeight(next) {
+      weightRange.value = clamp(next, 20, 200);
+      update();
+    }
+
+    function setDose(next) {
+      const rounded = Math.round(clamp(next, 0.2, 1.4) * 10) / 10;
+      doseRange.value = rounded.toFixed(1);
+      update();
+    }
+
+    document.getElementById('weightMinus').addEventListener('click', () => setWeight(Number(weightRange.value) - 1));
+    document.getElementById('weightPlus').addEventListener('click', () => setWeight(Number(weightRange.value) + 1));
+    document.getElementById('doseMinus').addEventListener('click', () => setDose(Number(doseRange.value) - 0.1));
+    document.getElementById('dosePlus').addEventListener('click', () => setDose(Number(doseRange.value) + 0.1));
+
+    weightRange.addEventListener('input', update);
+    doseRange.addEventListener('input', update);
+    concentration.addEventListener('change', update);
+
+    function update() {
+      const weight = Number(weightRange.value);
+      const dose = Number(doseRange.value);
+      const conc = Number(concentration.value);
+
+      const totalUgPerHour = weight * dose;
+      const rate = totalUgPerHour / conc;
+
+      weightValue.textContent = weight.toFixed(0);
+      doseValue.textContent = dose.toFixed(1);
+      rateOutput.textContent = rate.toFixed(2);
+      ugPerHour.textContent = `${totalUgPerHour.toFixed(1)} µg/h`;
+      concLabel.textContent = `${conc.toFixed(0)} µg/ml`;
+
+      [...quickDoseWrap.children].forEach((el) => {
+        el.classList.toggle('active', Number(el.textContent).toFixed(1) === dose.toFixed(1));
+      });
+    }
+
+    update();
+  </script>
+</body>
+</html>
