@@ -444,6 +444,26 @@
       .details-grid { grid-template-columns: repeat(3, 1fr); }
       .dial { width: 240px; height: 240px; }
     }
+
+    .back-btn {
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(8px);
+  transition: 0.2s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+.back-btn:active {
+  transform: scale(0.97);
+}
   </style>
 </head>
 <body>
@@ -455,6 +475,8 @@
             <span class="dot"></span>
             Dexdor / Dexmedetomidyna
           </div>
+            <a href="https://33mika.github.io/kalkulatory" class="back-btn">← Powrót</a>
+           </div>
           <div style="font-weight:700; opacity:0.9;">©MICHAA</div>
         </div>
         <h1>Kalkulator infuzji</h1>
